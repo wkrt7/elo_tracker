@@ -1,6 +1,6 @@
 from typing import Optional
 
-from sqlalchemy import Boolean, Float, ForeignKey, Integer, String
+from sqlalchemy import Boolean, Float, ForeignKey, Integer, String, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .base import Base
@@ -20,9 +20,7 @@ class Team(Base):
 
 class TeamParticipant(Base):
     __tablename__ = "team_participant"
-    __table_args__ = (
-        # unique constraint
-    )
+    __table_args__ = (UniqueConstraint("team_id", "player_id", name="uq_team_player"),)
 
     id: Mapped[int] = mapped_column(primary_key=True)
     team_id: Mapped[int] = mapped_column(ForeignKey("team.id"))
