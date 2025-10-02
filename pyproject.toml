@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "elo-tracker-backend"
+version = "0.1.0"
+description = "Serverless backend for Elo & stats app"
+license = "MIT"
+readme = "README.md"
+packages = [{ include = "backend/src" }]
+
+[tool.poetry.dependencies]
+python = "^3.13"
+python-dotenv = "^1.0.1"
+sqlalchemy = "^2.0.43"
+psycopg2-binary = "^2.9.10"
+pydantic = "^2.11.9"
+pytest = "^8.4.2"
+
+[build-system]
+requires = ["poetry-core>=1.5.0"]
+build-backend = "poetry.core.masonry.api"
