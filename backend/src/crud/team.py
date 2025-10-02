@@ -3,13 +3,13 @@ from typing import List, Optional
 from psycopg2 import IntegrityError
 from sqlalchemy.orm import Session
 from src.models import Team, TeamParticipant
-from src.schemas.team import TeamCreate, TeamParticipantCreate
+from src.schemas.team import TeamCreate, TeamParticipantCreate, TeamUpdate
 
 from backend.src.crud.base import CRUDBase
 from backend.src.models.player import Player
 
 
-class TeamParticipantCRUD(CRUDBase[TeamParticipant, TeamParticipantCreate]):
+class TeamParticipantCRUD(CRUDBase[TeamParticipant, TeamParticipantCreate, TeamUpdate]):
     def __init__(self):
         super().__init__(TeamParticipant)
 
@@ -27,5 +27,5 @@ class TeamParticipantCRUD(CRUDBase[TeamParticipant, TeamParticipantCreate]):
         return db_participant
 
 
-team_crud = CRUDBase[Team, TeamCreate](Team)
+team_crud = CRUDBase[Team, TeamCreate, TeamUpdate](Team)
 team_participant_crud = TeamParticipantCRUD()

@@ -4,9 +4,10 @@ from sqlalchemy.orm import Session
 
 ModelType = TypeVar("ModelType")
 CreateSchemaType = TypeVar("CreateSchemaType")
+UpdateSchemaType = TypeVar("UpdateSchemaType")
 
 
-class CRUDProtocol(Protocol[ModelType, CreateSchemaType]):
+class CRUDProtocol(Protocol[ModelType, CreateSchemaType, UpdateSchemaType]):
     def get(self, db: "Session", id: int) -> Optional[ModelType]: ...
     def list(self, db: "Session", skip: int = 0, limit: int = 100) -> List[ModelType]: ...
     def create(self, db: "Session", obj_in: CreateSchemaType) -> ModelType: ...
@@ -14,7 +15,7 @@ class CRUDProtocol(Protocol[ModelType, CreateSchemaType]):
     def delete(self, db: "Session", id: int) -> Optional[ModelType]: ...
 
 
-class CRUDBase(Generic[ModelType, CreateSchemaType]):
+class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
     model: type[ModelType]
 
     def __init__(self, model: type[ModelType]):
@@ -47,8 +48,16 @@ class CRUDBase(Generic[ModelType, CreateSchemaType]):
         db.flush()
         return db_obj
 
-    def update(self, db: Session, id: int, obj_in) -> ModelType:
-        raise NotImplementedError("Update not implemented yet")
+    def update(self, db: Session, id: int, obj_in: UpdateSchemaType) -> ModelType:
+        db_obj = self.get(db, id)
+        if not db_obj:
+            raise ValueError(f"Object with id {id} does not exist")
+        obj_data = obj_in.model_dump(exclude_unset=True)
+        for field in obj_data:
+            setattr(db_obj, field, obj_data[field])
+        db.add(db_obj)
+        db.flush()
+        return db_obj
 
     def delete(self, db: Session, id: int) -> Optional[ModelType]:
         db_obj = self.get(db, id)

@@ -31,3 +31,7 @@ class TeamRead(TeamBase):
     participants: List[TeamParticipantRead] = []
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class TeamUpdate(TeamBase):
+    pass

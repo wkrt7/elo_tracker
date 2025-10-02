@@ -13,3 +13,7 @@ class FinishTypeRead(FinishTypeBase):
     id: int
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class FinishTypeUpdate(FinishTypeBase):
+    pass

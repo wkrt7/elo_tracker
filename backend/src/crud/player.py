@@ -3,12 +3,12 @@ from typing import List, Optional
 from psycopg2 import IntegrityError
 from sqlalchemy.orm import Session
 from src.models import Player
-from src.schemas.player import PlayerCreate
+from src.schemas.player import PlayerCreate, PlayerUpdate
 
 from backend.src.crud.base import CRUDBase
 
 
-class PlayerCRUD(CRUDBase[Player, PlayerCreate]):
+class PlayerCRUD(CRUDBase[Player, PlayerCreate, PlayerUpdate]):
     def __init__(self):
         super().__init__(Player)
 

@@ -47,3 +47,11 @@ class MatchParticipantRead(BaseModel):
     elo_after: float
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class MatchUpdate(MatchBase):
+    pass
+
+
+class MatchParticipantUpdate(MatchBase):
+    pass

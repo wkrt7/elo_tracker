@@ -82,17 +82,75 @@
 
 ---
 
-## 8. Elo History Table
+alternative approach easier
 
-| Column      | Type     | Notes                                |
-| ----------- | -------- | ------------------------------------ |
-| `id`        | INT PK   | Unique record ID                     |
-| `player_id` | INT FK   | Foreign key to `player(id)`          |
-| `match_id`  | INT FK   | Foreign key to `match(id)`, nullable |
-| `elo`       | FLOAT    | Player Elo after this event          |
-| `timestamp` | DATETIME | When this Elo was recorded           |
+# Elo Tracker Database Structure (Player-Centric, Winner-Aware)
+
+## 1. Player Table
+
+| Column       | Type     | Notes              |
+| ------------ | -------- | ------------------ |
+| `id`         | INT PK   | Unique player ID   |
+| `name`       | VARCHAR  | Player name        |
+| `elo`        | FLOAT    | Current Elo        |
+| `created_at` | DATETIME | Optional timestamp |
 
 ---
+
+## 2. Character Table
+
+| Column | Type    | Notes               |
+| ------ | ------- | ------------------- |
+| `id`   | INT PK  | Unique character ID |
+| `name` | VARCHAR | Character name      |
+
+---
+
+## 3. Finish Type Table
+
+| Column | Type    | Notes                                            |
+| ------ | ------- | ------------------------------------------------ |
+| `id`   | INT PK  | Unique finish type ID                            |
+| `name` | VARCHAR | Finish type name (unique)                        |
+|        |         | Examples: 'push_to_base', 'regular_push', 'kill' |
+
+---
+
+## 4. Match Table
+
+| Column             | Type     | Notes                                       |
+| ------------------ | -------- | ------------------------------------------- |
+| `id`               | INT PK   | Unique match ID                             |
+| `date`             | DATETIME | When the match occurred                     |
+| `description`      | VARCHAR  | Optional match description                  |
+| `finish_type_id`   | INT FK   | Foreign key to `finish_type(id)`, nullable  |
+| `is_long`          | BOOLEAN  | 1 = long match, 0 = short match             |
+| `k_factor`         | FLOAT    | K-factor used for Elo calculation           |
+| `team_size`        | INT      | 1–5                                         |
+| `winner_team_side` | INT      | 1 = team A won, 2 = team B won, NULL = draw |
+
+---
+
+## 5. Match Participant Table
+
+| Column         | Type   | Notes                                    |
+| -------------- | ------ | ---------------------------------------- |
+| `id`           | INT PK | Unique record ID                         |
+| `match_id`     | INT FK | Foreign key to `match(id)`               |
+| `player_id`    | INT FK | Foreign key to `player(id)`              |
+| `character_id` | INT FK | Foreign key to `character(id)`, nullable |
+| `elo_before`   | FLOAT  | Elo before match                         |
+| `elo_after`    | FLOAT  | Elo after match                          |
+| `team_side`    | INT    | 1 = team A, 2 = team B                   |
+
+---
+
+### Notes
+
+- `team_side` groups players on the same side in a match.
+- `winner_team_side` indicates which side won.
+- Elo calculation remains per player, using opposing side for match strength.
+- No need for `team` or `team_participants` tables unless additional team info is required.
 
 ## Relationships
 

@@ -10,7 +10,7 @@ from sqlalchemy.orm import Session, declarative_base, relationship, sessionmaker
 from src.models import Team, TeamParticipant
 
 from backend.src.schemas.match import MatchCreate, MatchParticipantCreate, MatchRead
-from backend.src.schemas.player import PlayerCreate, PlayerRead
+from backend.src.schemas.player import PlayerCreate, PlayerRead, PlayerUpdate
 
 from .crud.match import match_crud, match_participant_crud
 from .crud.player import player_crud
@@ -139,38 +139,11 @@ def add_match(match: MatchCreate, db: Session = Depends(get_db)):
                 elo_after=player.elo + 1,
             ),
         )
-        # mps.append(mp)
+        player_crud.update(db, player.id, obj_in=PlayerUpdate(name=player.name, elo=mp.elo_after))
     try:
         db.commit()
-        # db_match
         db.refresh(db_match)
         return db_match
     except IntegrityError as e:
         db.rollback()
         raise HTTPException(status_code=400, detail="Transaction failed {e}")
-
-
-# @app.post("/teams/", response_model=TeamOut)
-# def create_team(team: TeamCreate, db: Session = Depends(get_db)):
-#     db_team = Team(name=team.name)
-#     db.add(db_team)
-#     db.commit()
-#     db.refresh(db_team)
-
-#     for pid in team.player_ids:
-#         db.add(TeamParticipant(team_id=db_team.id, player_id=pid))
-#     db.commit()
-#     return db_team
-
-# @app.post("/matches/", response_model=MatchOut)
-# def create_match(match: MatchCreate, db: Session = Depends(get_db)):
-#     db_match = Match(location=match.location)
-#     db.add(db_match)
-#     db.commit()
-#     db.refresh(db_match)
-
-#     for tid in match.team_ids:
-#         db.add(MatchParticipant(match_id=db_match.id, team_id=tid))
-#     db.commit()
-#     return MatchOut(id=db_match.id, location=db_match.location, team_ids=match.team_ids)
-# ```

@@ -18,6 +18,10 @@ class PlayerCreate(PlayerBase):
     pass
 
 
+class PlayerUpdate(BaseModel):
+    elo: float
+
+
 class PlayerRead(PlayerBase):
     id: int
     elo: float
