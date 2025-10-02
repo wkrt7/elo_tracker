@@ -6,6 +6,7 @@ from sqlalchemy.orm import sessionmaker
 from src.models.base import Base
 
 from backend.src.schemas.character import CharacterCreate
+from backend.src.schemas.match import MatchCreate, MatchParticipantCreate
 from backend.src.schemas.player import PlayerCreate
 from backend.src.schemas.team import TeamCreate, TeamParticipantCreate
 
@@ -24,7 +25,7 @@ def create_test_db():
 
 
 @pytest.fixture(scope="function")
-def db_session(create_test_db):
+def db_session(create_test_db: None):
     session = TestingSessionLocal()
     try:
         yield session
@@ -50,3 +51,28 @@ def new_team_data():
 @pytest.fixture
 def new_participant_data(player_id: int, team_id: int):
     return TeamParticipantCreate(player_id=player_id, team_id=team_id)
+
+
+@pytest.fixture
+def match_data():
+    return MatchCreate(
+        team_a_id=1,  # make sure these teams exist in your test DB
+        team_b_id=2,
+        team_size=2,
+        k_factor=32.0,
+        description="Test Match",
+        finish_type_id=None,
+        is_long=False,
+    )
+
+
+@pytest.fixture
+def participant_data(match_id: int):
+    return MatchParticipantCreate(
+        match_id=match_id,
+        player_id=1,  # make sure this player exists
+        team_id=1,
+        character_id=None,
+        elo_before=1000.0,
+        elo_after=1016.0,
+    )

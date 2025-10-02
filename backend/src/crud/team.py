@@ -5,41 +5,27 @@ from sqlalchemy.orm import Session
 from src.models import Team, TeamParticipant
 from src.schemas.team import TeamCreate, TeamParticipantCreate
 
+from backend.src.crud.base import CRUDBase
 from backend.src.models.player import Player
 
 
-def get_team(db: Session, team_id: int) -> Optional[Team]:
-    return db.query(Team).filter(Team.id == team_id).first()
+class TeamParticipantCRUD(CRUDBase[TeamParticipant, TeamParticipantCreate]):
+    def __init__(self):
+        super().__init__(TeamParticipant)
 
+    def pre_create(self, db: Session, obj_in: TeamParticipantCreate):
+        # Check if player exists
+        if db.query(Player).filter(Player.id == obj_in.player_id).first() is None:
+            raise ValueError(f"Player with id {obj_in.player_id} does not exist")
+        return obj_in
 
-def get_teams(db: Session, skip: int = 0, limit: int = 100) -> List[Team]:
-    return db.query(Team).offset(skip).limit(limit).all()
-
-
-def create_team(db: Session, team: TeamCreate) -> Team:
-    db_team = Team(name=team.name)
-    db.add(db_team)
-    db.commit()
-    db.refresh(db_team)
-    return db_team
-
-
-def add_team_participant(db: Session, participant: TeamParticipantCreate) -> TeamParticipant:
-    player = db.query(Player).filter(Player.id == participant.player_id).first()
-    if not player:
-        raise ValueError(f"Player with id {participant.player_id} does not exist.")
-
-    # Add the team participant
-    try:
-        db_participant = TeamParticipant(team_id=participant.team_id, player_id=participant.player_id)
+    def create(self, db: Session, obj_in: TeamParticipantCreate) -> TeamParticipant:
+        obj_in = self.pre_create(db, obj_in)
+        db_participant = TeamParticipant(team_id=obj_in.team_id, player_id=obj_in.player_id)
         db.add(db_participant)
-        db.commit()
-        db.refresh(db_participant)
+        db.flush()
         return db_participant
-    except IntegrityError as e:
-        db.rollback()
-        raise ValueError("Failed to add participant. Ensure the team and player combination is unique.") from e
 
 
-def update_team(db: Session, team_id: int, data) -> Team:
-    raise NotImplementedError("Update operation is not implemented yet")
+team_crud = CRUDBase[Team, TeamCreate](Team)
+team_participant_crud = TeamParticipantCRUD()

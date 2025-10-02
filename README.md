@@ -2,3 +2,5 @@ my todos
 
 - [ ] CICD deployment to aws or gcp of backend
 - [x] connect to supabase from python script
+- [ ] how to simplify this, do i need matchParticipants, TeamParticipants etc? I don't think so
+- [ ] run in serverless environment AWS lambda + API Gateway

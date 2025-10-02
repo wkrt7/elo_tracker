@@ -5,43 +5,28 @@ from sqlalchemy.orm import Session
 from src.models import Player
 from src.schemas.player import PlayerCreate
 
-
-def get_player(db: Session, player_id: int) -> Optional[Player]:
-    return db.query(Player).filter(Player.id == player_id).first()
+from backend.src.crud.base import CRUDBase
 
 
-def get_player_by_name(db: Session, name: str) -> Optional[Player]:
-    """
-    Fetch a single player by their username (name).
-    Returns None if not found.
-    """
-    return db.query(Player).filter(Player.name == name).first()
+class PlayerCRUD(CRUDBase[Player, PlayerCreate]):
+    def __init__(self):
+        super().__init__(Player)
+
+    def batch_get_by_names(self, db: Session, names: List[str], with_transaction: bool = False) -> List[Player]:
+        ret = db.query(Player).filter(Player.name.in_(names)).all()
+        if with_transaction:
+            if len(ret) != len(names):
+                missing_names = set(names) - {player.name for player in ret}
+                raise ValueError(f"Players with names {missing_names} do not exist")
+        return ret
+
+    def get_player_by_name(self, db: Session, name: str) -> Optional[Player]:
+        return db.query(Player).filter(Player.name == name).first()
+
+    def create(self, db: Session, obj_in: PlayerCreate) -> Player:
+        if self.get_player_by_name(db, obj_in.name):
+            raise ValueError(f"Player with name '{obj_in.name}' already exists")
+        return super().create(db, obj_in)
 
 
-def get_players(db: Session, skip: int = 0, limit: int = 100) -> List[Player]:
-    return db.query(Player).offset(skip).limit(limit).all()
-
-
-def create_player(db: Session, player: PlayerCreate) -> Player:
-    db_player = Player(name=player.name)
-    db.add(db_player)
-    try:
-        db.commit()
-    except IntegrityError:
-        db.rollback()
-        raise ValueError(f"Player with name '{player.name}' already exists")
-    db.refresh(db_player)
-    return db_player
-
-
-def update_player(db: Session, player_id: int, data) -> Player:
-    raise NotImplementedError("Update operation is not implemented yet")
-
-
-def delete_player(db: Session, player_id: int) -> Optional[Player]:
-    db_player = get_player(db, player_id)
-    if not db_player:
-        return None
-    db.delete(db_player)
-    db.commit()
-    return db_player
+player_crud = PlayerCRUD()

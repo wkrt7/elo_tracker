@@ -1,31 +1,22 @@
 import os
+from typing import List
 
 from dotenv import load_dotenv
-from models.player import Player
-from sqlalchemy import create_engine, text
-from sqlalchemy.orm import Session, sessionmaker
+from fastapi import Depends, FastAPI, HTTPException
+from psycopg2 import IntegrityError
+from pydantic import BaseModel, ValidationError
+from sqlalchemy import Column, ForeignKey, Integer, String, Table, create_engine, text
+from sqlalchemy.orm import Session, declarative_base, relationship, sessionmaker
+from src.models import Team, TeamParticipant
 
+from backend.src.schemas.match import MatchCreate, MatchParticipantCreate, MatchRead
+from backend.src.schemas.player import PlayerCreate, PlayerRead
 
-def create_player(db: Session, player: PlayerCreate):
-    db_player = Player(**player.model_dump())
-    db.add(db_player)
-    db.commit()
-    db.refresh(db_player)
-    return db_player
-
-
-def bulk_insert_players(db: Session, players: list[PlayerCreate]):
-    db.bulk_insert_mappings(Player, [p.model_dump() for p in players])
-    db.commit()
-
-
-def get_player(db: Session, player_id: int) -> Player:
-    return db.query(Player).filter(Player.player_id == player_id).first()
-
-
-def get_players(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(Player).offset(skip).limit(limit).all()
-
+from .crud.match import match_crud, match_participant_crud
+from .crud.player import player_crud
+from .crud.team import team_crud, team_participant_crud
+from .models.player import Player
+from .schemas.team import TeamCreate, TeamParticipantCreate, TeamRead
 
 load_dotenv()  # loads .env into environment variables
 
@@ -39,9 +30,147 @@ engine = create_engine(connection_string)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 db = SessionLocal()
 
-new_player = create_player(db, PlayerCreate(user_name="Alice", elo=1200))
-print(new_player.player_id, new_player.user_name)
-print(get_player(db, 1).user_name)
-ret = get_player(db, 1)
-player_read = PlayerRead.model_validate(ret)
-print(player_read.model_dump())
+
+# --- DEPENDENCY ---
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+
+app = FastAPI()
+
+
+@app.post("/players/", response_model=PlayerRead)
+def create_player(player_in: PlayerCreate, db: Session = Depends(get_db)):
+    try:
+        p = player_crud.create(db, player_in)
+        try:
+            db.commit()
+        except IntegrityError as e:
+            db.rollback()
+            raise HTTPException(status_code=400, detail="Transaction failed {e}")
+        return p
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@app.get("/players/", response_model=PlayerRead)
+def read_player(id: int | None = None, name: str | None = None, db: Session = Depends(get_db)):
+    if id:
+        return player_crud.get(db, id=id)
+    elif name:
+        return player_crud.get_player_by_name(db, name=name)
+
+
+@app.post("/team/", response_model=TeamRead)
+def create_team(team: TeamCreate, db: Session = Depends(get_db)):
+    try:
+        team_db = team_crud.create(db, team)
+        try:
+            db.commit()
+        except IntegrityError as e:
+            db.rollback()
+            raise HTTPException(status_code=400, detail="Transaction failed {e}")
+        return team_db
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@app.get("/get_teams/", response_model=List[TeamRead])
+def get_teams(db: Session = Depends(get_db)):
+    teams = team_crud.get_all(db)
+    return teams
+
+
+@app.post("/team_participant/", response_model=TeamParticipantCreate)
+def create_team_participant(tp: TeamParticipantCreate, db: Session = Depends(get_db)):
+    try:
+        tp_db = team_participant_crud.create(db, tp)
+        try:
+            db.commit()
+        except IntegrityError as e:
+            db.rollback()
+            raise HTTPException(status_code=400, detail="Transaction failed {e}")
+        return tp_db
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@app.post("/team_with_player/", response_model=TeamRead)
+def create_team_with_players(team: TeamCreate, player_names: list[str], db: Session = Depends(get_db)):
+    try:
+        players = player_crud.batch_get_by_names(names=player_names, db=db, with_transaction=True)
+
+        team_db = team_crud.create(db, team)
+        for player in players:
+            _ = team_participant_crud.create(
+                db=db, obj_in=TeamParticipantCreate(team_id=team_db.id, player_id=player.id)
+            )
+
+        db.commit()
+        db.refresh(team_db)  # make sure all relationships are loaded
+        return team_db
+    except ValueError as e:
+        db.rollback()
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/add_match/", response_model=MatchRead)
+def add_match(match: MatchCreate, db: Session = Depends(get_db)):
+    db_match = match_crud.create(db, match)
+
+    participants = db_match.team_a.participants + db_match.team_b.participants
+    mps = []
+    for par in participants:
+        player: Player = player_crud.get(db, par.player_id, with_transaction=True)
+        mp = match_participant_crud.create(
+            db,
+            obj_in=MatchParticipantCreate(
+                match_id=db_match.id,
+                player_id=par.player_id,
+                team_id=par.team_id,
+                elo_before=player.elo,
+                elo_after=player.elo + 1,
+            ),
+        )
+        # mps.append(mp)
+    try:
+        db.commit()
+        # db_match
+        db.refresh(db_match)
+        return db_match
+    except IntegrityError as e:
+        db.rollback()
+        raise HTTPException(status_code=400, detail="Transaction failed {e}")
+
+
+# @app.post("/teams/", response_model=TeamOut)
+# def create_team(team: TeamCreate, db: Session = Depends(get_db)):
+#     db_team = Team(name=team.name)
+#     db.add(db_team)
+#     db.commit()
+#     db.refresh(db_team)
+
+#     for pid in team.player_ids:
+#         db.add(TeamParticipant(team_id=db_team.id, player_id=pid))
+#     db.commit()
+#     return db_team
+
+# @app.post("/matches/", response_model=MatchOut)
+# def create_match(match: MatchCreate, db: Session = Depends(get_db)):
+#     db_match = Match(location=match.location)
+#     db.add(db_match)
+#     db.commit()
+#     db.refresh(db_match)
+
+#     for tid in match.team_ids:
+#         db.add(MatchParticipant(match_id=db_match.id, team_id=tid))
+#     db.commit()
+#     return MatchOut(id=db_match.id, location=db_match.location, team_ids=match.team_ids)
+# ```

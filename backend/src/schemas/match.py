@@ -11,6 +11,7 @@ class MatchBase(BaseModel):
     is_long: bool = False
     team_size: int
     k_factor: float
+    winner_team_id: int
 
 
 class MatchCreate(MatchBase):
@@ -23,8 +24,7 @@ class MatchRead(MatchBase):
     date: datetime
     team_a: TeamRead
     team_b: TeamRead
-    winner_team_id: Optional[int] = None
-
+    participants: List["MatchParticipantRead"]
     model_config = ConfigDict(from_attributes=True)
 
 
