@@ -1,3 +1,3 @@
-from . import character, finish_type, match, player, team
+from . import character, finish_type, match, player
 
-__all__ = ["player", "team", "match", "character", "finish_type"]
+__all__ = ["player", "match", "character", "finish_type"]

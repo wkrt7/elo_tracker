@@ -14,5 +14,5 @@ class Player(Base):
     elo: Mapped[float] = mapped_column(Float, default=1000.0)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.datetime.now(datetime.UTC))
 
-    team_participations: Mapped[list["TeamParticipant"]] = relationship(back_populates="player")
+    # team_participations: Mapped[list["TeamParticipant"]] = relationship(back_populates="player")
     match_participations: Mapped[list["MatchParticipant"]] = relationship(back_populates="player")

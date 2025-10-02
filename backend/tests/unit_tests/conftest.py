@@ -8,7 +8,6 @@ from src.models.base import Base
 from backend.src.schemas.character import CharacterCreate
 from backend.src.schemas.match import MatchCreate, MatchParticipantCreate
 from backend.src.schemas.player import PlayerCreate
-from backend.src.schemas.team import TeamCreate, TeamParticipantCreate
 
 # Use an in-memory SQLite database for testing
 DATABASE_URL = "sqlite:///:memory:"
@@ -44,20 +43,9 @@ def new_character_data():
 
 
 @pytest.fixture
-def new_team_data():
-    return TeamCreate(name="Alpha Team")
-
-
-@pytest.fixture
-def new_participant_data(player_id: int, team_id: int):
-    return TeamParticipantCreate(player_id=player_id, team_id=team_id)
-
-
-@pytest.fixture
 def match_data():
     return MatchCreate(
-        team_a_id=1,  # make sure these teams exist in your test DB
-        team_b_id=2,
+        winner_team_side=1,
         team_size=2,
         k_factor=32.0,
         description="Test Match",
@@ -69,9 +57,8 @@ def match_data():
 @pytest.fixture
 def participant_data(match_id: int):
     return MatchParticipantCreate(
-        match_id=match_id,
         player_id=1,  # make sure this player exists
-        team_id=1,
+        team_side=1,
         character_id=None,
         elo_before=1000.0,
         elo_after=1016.0,

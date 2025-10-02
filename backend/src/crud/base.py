@@ -43,7 +43,11 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         return db.query(self.model).offset(skip).limit(limit).all()
 
     def create(self, db: Session, obj_in: CreateSchemaType) -> ModelType:
-        db_obj = self.model(**obj_in.model_dump())
+        if hasattr(obj_in, "model_dump"):
+            obj_data = obj_in.model_dump()
+        else:
+            obj_data = dict(obj_in)
+        db_obj = self.model(**obj_data)
         db.add(db_obj)
         db.flush()
         return db_obj

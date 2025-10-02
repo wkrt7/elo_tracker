@@ -7,16 +7,13 @@ from psycopg2 import IntegrityError
 from pydantic import BaseModel, ValidationError
 from sqlalchemy import Column, ForeignKey, Integer, String, Table, create_engine, text
 from sqlalchemy.orm import Session, declarative_base, relationship, sessionmaker
-from src.models import Team, TeamParticipant
 
 from backend.src.schemas.match import MatchCreate, MatchParticipantCreate, MatchRead
 from backend.src.schemas.player import PlayerCreate, PlayerRead, PlayerUpdate
 
 from .crud.match import match_crud, match_participant_crud
 from .crud.player import player_crud
-from .crud.team import team_crud, team_participant_crud
 from .models.player import Player
-from .schemas.team import TeamCreate, TeamParticipantCreate, TeamRead
 
 load_dotenv()  # loads .env into environment variables
 
@@ -65,81 +62,41 @@ def read_player(id: int | None = None, name: str | None = None, db: Session = De
         return player_crud.get_player_by_name(db, name=name)
 
 
-@app.post("/team/", response_model=TeamRead)
-def create_team(team: TeamCreate, db: Session = Depends(get_db)):
-    try:
-        team_db = team_crud.create(db, team)
-        try:
-            db.commit()
-        except IntegrityError as e:
-            db.rollback()
-            raise HTTPException(status_code=400, detail="Transaction failed {e}")
-        return team_db
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
-
-
-@app.get("/get_teams/", response_model=List[TeamRead])
-def get_teams(db: Session = Depends(get_db)):
-    teams = team_crud.get_all(db)
-    return teams
-
-
-@app.post("/team_participant/", response_model=TeamParticipantCreate)
-def create_team_participant(tp: TeamParticipantCreate, db: Session = Depends(get_db)):
-    try:
-        tp_db = team_participant_crud.create(db, tp)
-        try:
-            db.commit()
-        except IntegrityError as e:
-            db.rollback()
-            raise HTTPException(status_code=400, detail="Transaction failed {e}")
-        return tp_db
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
-
-
-@app.post("/team_with_player/", response_model=TeamRead)
-def create_team_with_players(team: TeamCreate, player_names: list[str], db: Session = Depends(get_db)):
-    try:
-        players = player_crud.batch_get_by_names(names=player_names, db=db, with_transaction=True)
-
-        team_db = team_crud.create(db, team)
-        for player in players:
-            _ = team_participant_crud.create(
-                db=db, obj_in=TeamParticipantCreate(team_id=team_db.id, player_id=player.id)
-            )
-
-        db.commit()
-        db.refresh(team_db)  # make sure all relationships are loaded
-        return team_db
-    except ValueError as e:
-        db.rollback()
-        raise HTTPException(status_code=400, detail=str(e))
-    except Exception as e:
-        db.rollback()
-        raise HTTPException(status_code=500, detail=str(e))
-
-
 @app.post("/add_match/", response_model=MatchRead)
 def add_match(match: MatchCreate, db: Session = Depends(get_db)):
-    db_match = match_crud.create(db, match)
+    player_ids = [p.player_id for p in match.participants]
+    players = {p.id: p for p in player_crud.batch_get(db, player_ids, with_transaction=True)}
 
-    participants = db_match.team_a.participants + db_match.team_b.participants
-    mps = []
-    for par in participants:
-        player: Player = player_crud.get(db, par.player_id, with_transaction=True)
-        mp = match_participant_crud.create(
-            db,
-            obj_in=MatchParticipantCreate(
-                match_id=db_match.id,
-                player_id=par.player_id,
-                team_id=par.team_id,
-                elo_before=player.elo,
-                elo_after=player.elo + 1,
-            ),
-        )
-        player_crud.update(db, player.id, obj_in=PlayerUpdate(name=player.name, elo=mp.elo_after))
+    team_a = [players[p.player_id] for p in match.participants if p.team_side == 1]
+    team_b = [players[p.player_id] for p in match.participants if p.team_side == 2]
+
+    # team_a = [players[p.player_id] for p in team_a]
+    # team_b = [players[p.player_id] for p in team_b]
+
+    avg_elo_a = sum(p.elo for p in team_a) / len(team_a)
+    avg_elo_b = sum(p.elo for p in team_b) / len(team_b)
+    # 2️⃣ Prepare participant dicts with elo_before / elo_after
+    participants = []
+    for p in match.participants:
+        player = players[p.player_id]
+        part_dict = p.model_dump()
+        part_dict["elo_before"] = player.elo
+        if p.team_side == 1:
+            expected = 1 / (1 + 10 ** ((avg_elo_b - player.elo) / 400))
+            score = 1 if match.winner_team_side == 1 else 0
+        else:
+            expected = 1 / (1 + 10 ** ((avg_elo_a - player.elo) / 400))
+            score = 1 if match.winner_team_side == 2 else 0
+
+        new_elo = player.elo + match.k_factor * (score - expected)
+        part_dict["elo_after"] = new_elo
+        print(new_elo)
+        participants.append(part_dict)
+        player_crud.update(db=db, id=p.player_id, obj_in=PlayerUpdate(elo=part_dict["elo_after"]))
+
+    match_data = match.model_copy(update={"participants": participants})
+    db_match = match_crud.create(db, match_data)
+
     try:
         db.commit()
         db.refresh(db_match)
@@ -147,3 +104,17 @@ def add_match(match: MatchCreate, db: Session = Depends(get_db)):
     except IntegrityError as e:
         db.rollback()
         raise HTTPException(status_code=400, detail="Transaction failed {e}")
+
+
+@app.get("/get_match/", response_model=MatchRead)
+def get_match(id: int, db: Session = Depends(get_db)):
+    match = match_crud.get(db, id=id)
+    if not match:
+        raise HTTPException(status_code=404, detail="Match not found")
+    return match
+
+
+if __name__ == "__main__":
+    import uvicorn
+
+    uvicorn.run(app, host="localhost", port=8000)
