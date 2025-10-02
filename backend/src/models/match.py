@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime
 from typing import Optional
 
 from sqlalchemy import Boolean, Column, DateTime, Float, ForeignKey, Integer, String
@@ -11,7 +11,7 @@ class Match(Base):
     __tablename__ = "match"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    date: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    date: Mapped[datetime.datetime] = mapped_column(DateTime, default=datetime.datetime.now(datetime.UTC))
     description: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
     finish_type_id: Mapped[Optional[int]] = mapped_column(ForeignKey("finish_type.id"), nullable=True)
     is_long: Mapped[bool] = mapped_column(Boolean, default=False)
