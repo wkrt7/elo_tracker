@@ -1,23 +1,10 @@
 import os
-from typing import List
 
-from crud.character import character_crud
-from crud.finish_type import finish_type_crud
-from crud.match import match_crud, match_participant_crud
-from crud.player import player_crud
 from dotenv import load_dotenv
 from fastapi import Depends, FastAPI, HTTPException
-from models.player import Player
-from psycopg2 import IntegrityError
-from pydantic import BaseModel, ValidationError
 from routes import helpers, matches, players
-from schemas.match import MatchCreate, MatchParticipantCreate, MatchRead
-from schemas.player import PlayerCreate, PlayerRead, PlayerUpdate
 from sqlalchemy import Column, ForeignKey, Integer, String, Table, create_engine, text
 from sqlalchemy.orm import Session, declarative_base, relationship, sessionmaker
-
-from api.schemas.character import CharacterRead
-from api.schemas.finish_type import FinishTypeRead
 
 load_dotenv()  # loads .env into environment variables
 
