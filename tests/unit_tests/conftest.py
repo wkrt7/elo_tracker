@@ -51,6 +51,7 @@ def match_data():
         description="Test Match",
         finish_type_id=None,
         is_long=False,
+        participants=[],
     )
 
 
