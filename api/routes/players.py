@@ -1,11 +1,10 @@
 from typing import List
 
+from config import get_db
+from crud.player import player_crud
 from fastapi import APIRouter, Depends, HTTPException
+from schemas.player import PlayerCreate, PlayerRead, PlayerUpdate
 from sqlalchemy.orm import Session
-
-from api.config import get_db
-from api.crud.player import player_crud
-from api.schemas.player import PlayerCreate, PlayerRead, PlayerUpdate
 
 router = APIRouter(prefix="/players", tags=["players"])
 
