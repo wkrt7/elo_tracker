@@ -13,29 +13,20 @@ from api.schemas.match import (
 
 
 def test_match_create():
-    match = MatchCreate(team_size=1, k_factor=32, winner_team_side=1)
+    match = MatchCreate(team_size=1, k_factor=32, winner_team_side=1, is_long=False, participants=[])
     assert match.team_size == 1
     assert match.k_factor == 32
     assert match.winner_team_side == 1
 
 
-def test_match_create_with_optional_fields():
-    match = MatchCreate(
-        description="Epic showdown", finish_type_id=1, is_long=True, team_size=2, k_factor=40, winner_team_side=2
-    )
-    assert match.description == "Epic showdown"
-    assert match.is_long is True
-
-
 def test_match_create_draw():
     # winner_team_side can be None for draws
-    match = MatchCreate(team_size=1, k_factor=32, winner_team_side=None)
+    match = MatchCreate(team_size=1, k_factor=32, winner_team_side=None, is_long=False, participants=[])
     assert match.winner_team_side is None
 
 
 def test_match_participant_create():
-    mp = MatchParticipantCreate(player_id=2, team_side=1, elo_before=1000, elo_after=1016)
-    assert mp.elo_after == 1016
+    mp = MatchParticipantCreate(player_id=2, team_side=1)
     assert mp.team_side == 1
     assert mp.player_id == 2
 

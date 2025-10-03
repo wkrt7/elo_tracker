@@ -7,6 +7,7 @@ my todos
 - [x] run in vercel, fast api is ready already, test if this will be free
 - [ ] create a deployment by github acitons
 - [ ] solve warning in main while adding the match
+- [ ] !!secure this wit jwt or oath!!
 - [ ] refractor elo computation
 
 poorject tree generator
