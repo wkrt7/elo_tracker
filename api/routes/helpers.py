@@ -1,10 +1,10 @@
 from typing import List
 
+from config import get_db
 from fastapi import APIRouter, Depends, HTTPException
 from psycopg2 import IntegrityError
 from sqlalchemy.orm import Session
 
-from api.config import get_db
 from api.crud.character import character_crud
 from api.crud.finish_type import finish_type_crud
 from api.schemas.character import CharacterRead
