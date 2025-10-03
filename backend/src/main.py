@@ -19,10 +19,11 @@ load_dotenv()  # loads .env into environment variables
 
 DB_PASSWORD = os.environ["DB_PASSWORD"]
 DB_ID = os.environ["DB_ID"]
+DB_URL = os.environ["DB_URL"]
+DB_PORT = os.environ.get("DB_PORT")
 
-connection_string = (
-    f"postgresql://postgres.vkqxkuvqhzlsocnncoik:{DB_PASSWORD}@aws-1-us-east-2.pooler.supabase.com:6543/postgres"
-)
+connection_string = f"postgresql://postgres.{DB_ID}:{DB_PASSWORD}@{DB_URL}:{DB_PORT}/postgres"
+
 engine = create_engine(connection_string)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 db = SessionLocal()
@@ -70,12 +71,9 @@ def add_match(match: MatchCreate, db: Session = Depends(get_db)):
     team_a = [players[p.player_id] for p in match.participants if p.team_side == 1]
     team_b = [players[p.player_id] for p in match.participants if p.team_side == 2]
 
-    # team_a = [players[p.player_id] for p in team_a]
-    # team_b = [players[p.player_id] for p in team_b]
-
     avg_elo_a = sum(p.elo for p in team_a) / len(team_a)
     avg_elo_b = sum(p.elo for p in team_b) / len(team_b)
-    # 2️⃣ Prepare participant dicts with elo_before / elo_after
+    # Prepare participant dicts with elo_before / elo_after
     participants = []
     for p in match.participants:
         player = players[p.player_id]
