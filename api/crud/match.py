@@ -1,15 +1,14 @@
 from typing import List, Optional
 
-from sqlalchemy.orm import Session
-
-from api.crud.base import CRUDBase
-from api.models import Match, MatchParticipant
-from api.schemas.match import (
+from crud.base import CRUDBase
+from models import Match, MatchParticipant
+from schemas.match import (
     MatchCreate,
     MatchParticipantCreate,
     MatchParticipantUpdate,
     MatchUpdate,
 )
+from sqlalchemy.orm import Session
 
 
 class MatchCrud(CRUDBase[Match, MatchCreate, MatchUpdate]):
