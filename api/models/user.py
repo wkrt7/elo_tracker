@@ -11,6 +11,5 @@ class Character(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     username: Mapped[str] = mapped_column(String(255), unique=True)
-
-    # Relationships
-    match_participations: Mapped[List["MatchParticipant"]] = relationship(back_populates="character")
+    disabled: Mapped[bool] = mapped_column(default=False)
+    hashed_password: Mapped[str] = mapped_column(String(255))
