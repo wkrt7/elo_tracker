@@ -2,10 +2,10 @@ from typing import List, Optional
 
 from psycopg2 import IntegrityError
 from sqlalchemy.orm import Session
-from src.models import Player
-from src.schemas.player import PlayerCreate, PlayerUpdate
 
-from backend.src.crud.base import CRUDBase
+from api.crud.base import CRUDBase
+from api.models import Player
+from api.schemas.player import PlayerCreate, PlayerUpdate
 
 
 class PlayerCRUD(CRUDBase[Player, PlayerCreate, PlayerUpdate]):

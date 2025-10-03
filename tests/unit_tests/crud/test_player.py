@@ -1,8 +1,9 @@
 import pytest
 from sqlalchemy.orm import Session
-from src.crud.player import player_crud
-from src.models import Player
-from src.schemas.player import PlayerCreate
+
+from api.crud.player import player_crud
+from api.models import Player
+from api.schemas.player import PlayerCreate
 
 
 def test_create_player(db_session: Session, new_player_data):

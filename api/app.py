@@ -8,12 +8,11 @@ from pydantic import BaseModel, ValidationError
 from sqlalchemy import Column, ForeignKey, Integer, String, Table, create_engine, text
 from sqlalchemy.orm import Session, declarative_base, relationship, sessionmaker
 
-from backend.src.schemas.match import MatchCreate, MatchParticipantCreate, MatchRead
-from backend.src.schemas.player import PlayerCreate, PlayerRead, PlayerUpdate
-
 from .crud.match import match_crud, match_participant_crud
 from .crud.player import player_crud
 from .models.player import Player
+from .schemas.match import MatchCreate, MatchParticipantCreate, MatchRead
+from .schemas.player import PlayerCreate, PlayerRead, PlayerUpdate
 
 load_dotenv()  # loads .env into environment variables
 

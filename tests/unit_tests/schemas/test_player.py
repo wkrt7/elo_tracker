@@ -2,7 +2,8 @@ import datetime
 
 import pytest
 from pydantic import ValidationError
-from src.schemas.player import PlayerCreate, PlayerRead
+
+from api.schemas.player import PlayerCreate, PlayerRead
 
 
 def test_player_create_valid():

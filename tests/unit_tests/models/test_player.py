@@ -1,7 +1,8 @@
 import pytest
-from src.models.character import Character
-from src.models.match import Match, MatchParticipant
-from src.models.player import Player
+
+from api.models.character import Character
+from api.models.match import Match, MatchParticipant
+from api.models.player import Player
 
 
 def test_create_player(db_session):

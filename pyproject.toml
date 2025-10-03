@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "Serverless backend for Elo & stats app"
 license = "MIT"
 readme = "README.md"
-packages = [{ include = "backend/src" }]
+packages = [{ include = "api" }]
 
 [tool.poetry.dependencies]
 python = "^3.13"

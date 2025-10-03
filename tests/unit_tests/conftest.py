@@ -3,11 +3,11 @@ import uuid
 import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from src.models.base import Base
 
-from backend.src.schemas.character import CharacterCreate
-from backend.src.schemas.match import MatchCreate, MatchParticipantCreate
-from backend.src.schemas.player import PlayerCreate
+from api.models.base import Base
+from api.schemas.character import CharacterCreate
+from api.schemas.match import MatchCreate, MatchParticipantCreate
+from api.schemas.player import PlayerCreate
 
 # Use an in-memory SQLite database for testing
 DATABASE_URL = "sqlite:///:memory:"
