@@ -49,7 +49,7 @@ def create_player(player_in: PlayerCreate, db: Session = Depends(get_db)):
             db.commit()
         except IntegrityError as e:
             db.rollback()
-            raise HTTPException(status_code=400, detail="Transaction failed {e}")
+            raise HTTPException(status_code=400, detail="Transaction  failed {e}")
         return p
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
