@@ -46,6 +46,14 @@ FOREIGN KEY (character_id) REFERENCES character(id) ON DELETE SET NULL,
 CONSTRAINT uq_match_player UNIQUE (match_id, player_id)
 );
 
+--- 6. app users for auth
+
+CREATE TABLE app_user(
+id SERIAL PRIMARY KEY,
+username VARCHAR(255) UNIQUE NOT NULL,
+password VARCHAR(255) NOT NULL,
+created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 -- Indexes for better query performance
 CREATE INDEX idx_match_participant_match ON match_participant(match_id);
 CREATE INDEX idx_match_participant_player ON match_participant(player_id);
