@@ -1,7 +1,8 @@
 import datetime
 
 import pytest
-from src.schemas.match import (
+
+from api.schemas.match import (
     MatchCreate,
     MatchParticipantCreate,
     MatchParticipantRead,

@@ -1,19 +1,17 @@
 import os
 from typing import List
 
+from crud.match import match_crud, match_participant_crud
+from crud.player import player_crud
 from dotenv import load_dotenv
 from fastapi import Depends, FastAPI, HTTPException
+from models.player import Player
 from psycopg2 import IntegrityError
 from pydantic import BaseModel, ValidationError
+from schemas.match import MatchCreate, MatchParticipantCreate, MatchRead
+from schemas.player import PlayerCreate, PlayerRead, PlayerUpdate
 from sqlalchemy import Column, ForeignKey, Integer, String, Table, create_engine, text
 from sqlalchemy.orm import Session, declarative_base, relationship, sessionmaker
-
-from backend.src.schemas.match import MatchCreate, MatchParticipantCreate, MatchRead
-from backend.src.schemas.player import PlayerCreate, PlayerRead, PlayerUpdate
-
-from .crud.match import match_crud, match_participant_crud
-from .crud.player import player_crud
-from .models.player import Player
 
 load_dotenv()  # loads .env into environment variables
 
@@ -38,7 +36,19 @@ def get_db():
         db.close()
 
 
+from fastapi import FastAPI
+
 app = FastAPI()
+
+
+@app.get("/")
+def read_root():
+    return {"message": "Hello World from FastAPI on Vercel!"}
+
+
+@app.get("/api/health")
+def health_check():
+    return {"status": "healthy"}
 
 
 @app.post("/players/", response_model=PlayerRead)
@@ -49,7 +59,7 @@ def create_player(player_in: PlayerCreate, db: Session = Depends(get_db)):
             db.commit()
         except IntegrityError as e:
             db.rollback()
-            raise HTTPException(status_code=400, detail="Transaction failed {e}")
+            raise HTTPException(status_code=400, detail="Transaction  failed {e}")
         return p
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -115,4 +125,4 @@ def get_match(id: int, db: Session = Depends(get_db)):
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run(app, host="localhost", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=8000)

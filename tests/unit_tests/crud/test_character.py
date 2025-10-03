@@ -1,8 +1,9 @@
 import pytest
 from sqlalchemy.orm import Session
-from src.crud.character import character_crud
-from src.models import Character
-from src.schemas.character import CharacterCreate
+
+from api.crud.character import character_crud
+from api.models import Character
+from api.schemas.character import CharacterCreate
 
 
 def test_create_character(db_session: Session, new_character_data):

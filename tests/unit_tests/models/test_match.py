@@ -1,4 +1,4 @@
-from src.models.match import Match
+from api.models.match import Match
 
 
 def test_create_match(db_session):

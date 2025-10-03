@@ -1,11 +1,10 @@
 from typing import List, Optional
 
+from crud.base import CRUDBase
+from models import Player
 from psycopg2 import IntegrityError
+from schemas.player import PlayerCreate, PlayerUpdate
 from sqlalchemy.orm import Session
-from src.models import Player
-from src.schemas.player import PlayerCreate, PlayerUpdate
-
-from backend.src.crud.base import CRUDBase
 
 
 class PlayerCRUD(CRUDBase[Player, PlayerCreate, PlayerUpdate]):

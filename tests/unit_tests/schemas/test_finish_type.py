@@ -1,5 +1,6 @@
 import pytest
-from src.schemas.finish_type import FinishTypeCreate, FinishTypeRead
+
+from api.schemas.finish_type import FinishTypeCreate, FinishTypeRead
 
 
 def test_finish_type_create():

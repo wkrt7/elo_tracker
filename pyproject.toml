@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "Serverless backend for Elo & stats app"
 license = "MIT"
 readme = "README.md"
-packages = [{ include = "backend/src" }]
+packages = [{ include = "api" }]
 
 [tool.poetry.dependencies]
 python = "^3.13"
@@ -17,11 +17,12 @@ pytest-cov = "^4.0.0"
 fastapi = "^0.118.0"
 uvicorn = "^0.37.0"
 
+
 [build-system]
 requires = ["poetry-core>=1.5.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-pythonpath = ["."]
-addopts = ["--cov=src", "--cov-report=html", "--cov-report=term-missing", "-v"]
+pythonpath = [".", "api/"]
+addopts = ["--cov=api", "--cov-report=html", "--cov-report=term-missing", "-v"]

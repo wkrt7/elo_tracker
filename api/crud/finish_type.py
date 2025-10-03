@@ -1,9 +1,8 @@
 from typing import List, Optional
 
+from crud.base import CRUDBase
+from models import FinishType
+from schemas.finish_type import FinishTypeCreate, FinishTypeUpdate
 from sqlalchemy.orm import Session
-from src.models import FinishType
-from src.schemas.finish_type import FinishTypeCreate, FinishTypeUpdate
-
-from backend.src.crud.base import CRUDBase
 
 finish_type_crud = CRUDBase[FinishType, FinishTypeCreate, FinishTypeUpdate](FinishType)
