@@ -15,6 +15,10 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 ALGORITHM = os.environ.get("ALGORITHM")
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES"))
 
+STARTING_ELO = int(os.getenv("STARTING_ELO", 1200))
+K_FACTOR_LONG = float(os.getenv("K_FACTOR", 50.0))
+K_FACTOR_SHORT = float(os.getenv("K_FACTOR_SHORT", 40.0))
+
 connection_string = f"postgresql://postgres.{DB_ID}:{DB_PASSWORD}@{DB_URL}:{DB_PORT}/postgres"
 
 engine = create_engine(connection_string)
