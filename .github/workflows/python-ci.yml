@@ -18,6 +18,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install poetry
+          pip install pre-commit
           poetry install
       - name: clean up
         run: pre-commit run --all-files --show-diff-on-failure
