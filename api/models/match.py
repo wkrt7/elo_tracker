@@ -26,14 +26,9 @@ class Match(Base):
     is_long: Mapped[bool] = mapped_column(Boolean, default=False)
     team_size: Mapped[int] = mapped_column(Integer)
     k_factor: Mapped[float] = mapped_column(Float)
-    # team_a_id: Mapped[int] = mapped_column(ForeignKey("team.id"))
-    # team_b_id: Mapped[int] = mapped_column(ForeignKey("team.id"))
     winner_team_side: Mapped[Optional[int]] = mapped_column(nullable=False)
 
     finish_type: Mapped[Optional["FinishType"]] = relationship(back_populates="matches")
-    # team_a: Mapped["Team"] = relationship(foreign_keys=[team_a_id], back_populates="matches_as_team_a")
-    # team_b: Mapped["Team"] = relationship(foreign_keys=[team_b_id], back_populates="matches_as_team_b")
-    # winner_team: Mapped[Optional["Team"]] = relationship(foreign_keys=[winner_team_id], back_populates="matches_won")
     participants: Mapped[list["MatchParticipant"]] = relationship(back_populates="match")
 
 

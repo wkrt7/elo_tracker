@@ -1,5 +1,4 @@
 import datetime
-import os
 from contextvars import Token
 from typing import Annotated
 
@@ -10,28 +9,12 @@ from auth.security import (
     get_current_active_user,
 )
 from config import get_db
-from dotenv import load_dotenv
 from fastapi import Depends, FastAPI, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi.security import OAuth2PasswordRequestForm
 from routes import helpers, matches, players
 from schemas.token import Token
 from schemas.user import User
-from sqlalchemy import Column, ForeignKey, Integer, String, Table, create_engine, text
-from sqlalchemy.orm import Session, declarative_base, relationship, sessionmaker
-
-load_dotenv()  # loads .env into environment variables
-
-DB_PASSWORD = os.environ["DB_PASSWORD"]
-DB_ID = os.environ["DB_ID"]
-DB_URL = os.environ["DB_URL"]
-DB_PORT = os.environ.get("DB_PORT")
-
-
-connection_string = f"postgresql://postgres.{DB_ID}:{DB_PASSWORD}@{DB_URL}:{DB_PORT}/postgres"
-
-engine = create_engine(connection_string)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-db = SessionLocal()
+from sqlalchemy.orm import Session
 
 app = FastAPI()
 
@@ -67,12 +50,11 @@ async def read_users_me(
 
 @app.get("/")
 def read_root():
-    return {"message": "Hello World from FastAPI on Vercel!"}
+    return {"message": "Welcome to the ELO Tracker API!"}
 
 
 @app.get("/api/health")
-def health_check(current_user: User = Depends(get_current_active_user)):
-
+def health_check():
     return {"status": "healthy"}
 
 

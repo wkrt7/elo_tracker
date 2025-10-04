@@ -1,5 +1,3 @@
-from typing import List, Optional
-
 from crud.base import CRUDBase
 from models import FinishType
 from schemas.finish_type import FinishTypeCreate, FinishTypeUpdate
