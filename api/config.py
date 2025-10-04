@@ -11,6 +11,10 @@ DB_ID = os.getenv("DB_ID")
 DB_URL = os.getenv("DB_URL")
 DB_PORT = os.getenv("DB_PORT")
 
+SECRET_KEY = os.environ.get("SECRET_KEY")
+ALGORITHM = os.environ.get("ALGORITHM")
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES"))
+
 connection_string = f"postgresql://postgres.{DB_ID}:{DB_PASSWORD}@{DB_URL}:{DB_PORT}/postgres"
 
 engine = create_engine(connection_string)

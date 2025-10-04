@@ -1,12 +1,14 @@
 from typing import List
 
+from auth.security import get_current_active_user
 from config import get_db
 from crud.player import player_crud
 from fastapi import APIRouter, Depends, HTTPException
 from schemas.player import PlayerCreate, PlayerRead, PlayerUpdate
+from schemas.user import User
 from sqlalchemy.orm import Session
 
-router = APIRouter(prefix="/players", tags=["players"])
+router = APIRouter(prefix="/players", tags=["players"], dependencies=[Depends(get_current_active_user)])
 
 
 @router.post("/", response_model=PlayerRead)
