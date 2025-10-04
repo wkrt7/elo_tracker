@@ -13,15 +13,14 @@ from api.schemas.match import (
 
 
 def test_match_create():
-    match = MatchCreate(team_size=1, k_factor=32, winner_team_side=1, is_long=False, participants=[])
+    match = MatchCreate(team_size=1, winner_team_side=1, is_long=False, participants=[])
     assert match.team_size == 1
-    assert match.k_factor == 32
     assert match.winner_team_side == 1
 
 
 def test_match_create_draw():
     # winner_team_side can be None for draws
-    match = MatchCreate(team_size=1, k_factor=32, winner_team_side=None, is_long=False, participants=[])
+    match = MatchCreate(team_size=1, winner_team_side=None, is_long=False, participants=[])
     assert match.winner_team_side is None
 
 

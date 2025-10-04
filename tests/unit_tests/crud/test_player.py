@@ -10,7 +10,7 @@ def test_create_player(db_session: Session, new_player_data):
     db_player = player_crud.create(db_session, new_player_data)
     assert db_player.id is not None
     assert db_player.name == new_player_data.name
-    assert db_player.elo == 1000.0
+    assert db_player.elo == 1200.0
 
 
 def test_get_player(db_session: Session, new_player_data):

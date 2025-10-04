@@ -47,7 +47,6 @@ def match_data():
     return MatchCreate(
         winner_team_side=1,
         team_size=2,
-        k_factor=32.0,
         description="Test Match",
         finish_type_id=None,
         is_long=False,
