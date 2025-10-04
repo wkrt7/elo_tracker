@@ -16,8 +16,10 @@ class EloService:
         Returns a list of participant dicts with elo_before and elo_after.
         """
         player_ids = [p.player_id for p in match.participants]
-        players = {p.id: p for p in player_crud.batch_get(self.db, player_ids, with_transaction=True)}
-
+        try:
+            players = {p.id: p for p in player_crud.batch_get(self.db, player_ids, with_transaction=True)}
+        except ValueError as e:
+            raise ValueError(f"Failed to fetch players for ELO calculation: {e}")
         # Split into teams
         team_a = [players[p.player_id] for p in match.participants if p.team_side == 1]
         team_b = [players[p.player_id] for p in match.participants if p.team_side == 2]

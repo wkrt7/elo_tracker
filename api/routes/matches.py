@@ -27,6 +27,9 @@ def add_match(match: MatchCreate, db: Session = Depends(get_db)):
     except IntegrityError as e:
         db.rollback()
         raise HTTPException(status_code=400, detail="Transaction failed {e}")
+    except ValueError as e:
+        db.rollback()
+        raise HTTPException(status_code=400, detail=f"Transaction failed: {e}")
 
 
 @router.get("/get_match/", response_model=MatchRead)
