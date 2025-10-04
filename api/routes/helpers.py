@@ -1,5 +1,6 @@
 from typing import List
 
+from auth.security import get_current_active_user
 from config import get_db
 from crud.character import character_crud
 from crud.finish_type import finish_type_crud
@@ -9,7 +10,7 @@ from schemas.character import CharacterRead
 from schemas.finish_type import FinishTypeRead
 from sqlalchemy.orm import Session
 
-router = APIRouter(prefix="/helpers", tags=["helpers"])
+router = APIRouter(prefix="/helpers", tags=["helpers"], dependencies=[Depends(get_current_active_user)])
 
 
 @router.get("/get_characters/", response_model=List[CharacterRead])

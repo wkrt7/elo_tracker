@@ -6,5 +6,9 @@ class User(BaseModel):
     disabled: bool | None = None
 
 
-class UserInDB(User):
+class UserCreate(User):
     hashed_password: str
+
+
+class UserUpdate:
+    pass

@@ -8,7 +8,7 @@ from schemas.player import PlayerCreate, PlayerRead, PlayerUpdate
 from schemas.user import User
 from sqlalchemy.orm import Session
 
-router = APIRouter(prefix="/players", tags=["players"], dependencies=Depends(get_current_active_user))
+router = APIRouter(prefix="/players", tags=["players"], dependencies=[Depends(get_current_active_user)])
 
 
 @router.post("/", response_model=PlayerRead)
