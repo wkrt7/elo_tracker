@@ -9,7 +9,9 @@ from schemas.character import CharacterRead
 from schemas.finish_type import FinishTypeRead
 from sqlalchemy.orm import Session
 
-router = APIRouter(prefix="/helpers", tags=["helpers"], dependencies=[Depends(get_current_active_user)])
+router = APIRouter(
+    prefix="/helpers", tags=["helpers"], dependencies=[Depends(get_current_active_user)]
+)
 
 
 @router.get("/get_characters/", response_model=List[CharacterRead])

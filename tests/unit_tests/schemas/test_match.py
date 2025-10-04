@@ -20,7 +20,9 @@ def test_match_create():
 
 def test_match_create_draw():
     # winner_team_side can be None for draws
-    match = MatchCreate(team_size=1, winner_team_side=None, is_long=False, participants=[])
+    match = MatchCreate(
+        team_size=1, winner_team_side=None, is_long=False, participants=[]
+    )
     assert match.winner_team_side is None
 
 
@@ -31,7 +33,9 @@ def test_match_participant_create():
 
 
 def test_match_participant_with_character():
-    mp = MatchParticipantCreate(player_id=3, team_side=2, character_id=5, elo_before=1200, elo_after=1185)
+    mp = MatchParticipantCreate(
+        player_id=3, team_side=2, character_id=5, elo_before=1200, elo_after=1185
+    )
     assert mp.character_id == 5
 
 
@@ -99,12 +103,16 @@ def test_invalid_team_size_zero():
 
 def test_invalid_team_side():
     with pytest.raises(ValueError, match="Team side must be 1 or 2"):
-        MatchParticipantCreate(player_id=1, team_side=3, elo_before=1000, elo_after=1016)
+        MatchParticipantCreate(
+            player_id=1, team_side=3, elo_before=1000, elo_after=1016
+        )
 
 
 def test_invalid_team_side_zero():
     with pytest.raises(ValueError, match="Team side must be 1 or 2"):
-        MatchParticipantCreate(player_id=1, team_side=0, elo_before=1000, elo_after=1016)
+        MatchParticipantCreate(
+            player_id=1, team_side=0, elo_before=1000, elo_after=1016
+        )
 
 
 def test_invalid_winner_team_side():

@@ -17,7 +17,12 @@ class EloService:
         """
         player_ids = [p.player_id for p in match.participants]
         try:
-            players = {p.id: p for p in player_crud.batch_get(self.db, player_ids, with_transaction=True)}
+            players = {
+                p.id: p
+                for p in player_crud.batch_get(
+                    self.db, player_ids, with_transaction=True
+                )
+            }
         except ValueError as e:
             raise ValueError(f"Failed to fetch players for ELO calculation: {e}")
         # Split into teams
@@ -44,7 +49,9 @@ class EloService:
             part_dict["elo_after"] = new_elo
 
             # Update player in DB
-            player_crud.update(self.db, id=p.player_id, obj_in=PlayerUpdate(elo=new_elo))
+            player_crud.update(
+                self.db, id=p.player_id, obj_in=PlayerUpdate(elo=new_elo)
+            )
             participants.append(part_dict)
 
         return participants

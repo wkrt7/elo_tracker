@@ -32,4 +32,6 @@ class MatchCrud(CRUDBase[Match, MatchCreate, MatchUpdate]):
 
 
 match_crud = MatchCrud(Match)
-match_participant_crud = CRUDBase[MatchParticipant, MatchParticipantCreate, MatchParticipantUpdate](MatchParticipant)
+match_participant_crud = CRUDBase[
+    MatchParticipant, MatchParticipantCreate, MatchParticipantUpdate
+](MatchParticipant)

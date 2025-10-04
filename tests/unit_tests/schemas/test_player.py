@@ -17,7 +17,12 @@ def test_player_create_invalid():
 
 
 def test_player_read_serialization():
-    data = {"id": 1, "name": "Alice", "elo": 1000.0, "created_at": datetime.datetime.now(datetime.UTC)}
+    data = {
+        "id": 1,
+        "name": "Alice",
+        "elo": 1000.0,
+        "created_at": datetime.datetime.now(datetime.UTC),
+    }
     player = PlayerRead(**data)
     assert player.id == 1
     assert player.elo == 1000.0

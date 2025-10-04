@@ -20,7 +20,7 @@ models
 schemas
 \_init\_\_.py
 app.py
-config.py  
+config.py
  requirements.txt # root level
 forntend # react front end
 test
@@ -34,7 +34,7 @@ elo_tracker/
 │ ├── schemas
 │ ├── \_init\_\_.py
 │ ├── app.py
-│ ├── config.py  
+│ ├── config.py
 │ └── requirements.txt # root level
 ├── forntend # react front end
 ├── test

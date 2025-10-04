@@ -9,7 +9,9 @@ from schemas.match import MatchCreate, MatchInternal, MatchRead
 from services.elo_service import EloService
 from sqlalchemy.orm import Session
 
-router = APIRouter(prefix="/matches", tags=["matches"], dependencies=[Depends(get_current_active_user)])
+router = APIRouter(
+    prefix="/matches", tags=["matches"], dependencies=[Depends(get_current_active_user)]
+)
 
 
 @router.post("/add_match/", response_model=MatchRead)

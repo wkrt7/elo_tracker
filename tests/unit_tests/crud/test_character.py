@@ -41,9 +41,9 @@ def test_character_unique_name(db_session: Session, new_character_data):
     character_crud.create(db_session, new_character_data)
     with pytest.raises(Exception) as excinfo:
         character_crud.create(db_session, new_character_data)
-    assert "UNIQUE constraint failed" in str(excinfo.value) or "duplicate key value violates unique constraint" in str(
+    assert "UNIQUE constraint failed" in str(
         excinfo.value
-    )
+    ) or "duplicate key value violates unique constraint" in str(excinfo.value)
 
 
 def test_character_name_whitespace(db_session: Session):
