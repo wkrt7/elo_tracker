@@ -10,7 +10,7 @@ load_dotenv()
 DB_PASSWORD = os.getenv("DB_PASSWORD")
 DB_ID = os.getenv("DB_ID")
 DB_URL = os.getenv("DB_URL")
-DB_PORT = os.getenv("DB_PORT")
+DB_PORT = int(os.getenv("DB_PORT", "0"))
 
 SECRET_KEY = os.environ.get("SECRET_KEY")
 ALGORITHM = os.environ.get("ALGORITHM")
