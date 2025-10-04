@@ -19,5 +19,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install poetry
           poetry install
+      - name: clean up
+        run: pre-commit run --all-files --show-diff-on-failure
       - name: Testing
         run: poetry run pytest
