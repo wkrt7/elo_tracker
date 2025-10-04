@@ -2,7 +2,6 @@ from typing import List, Optional
 
 from crud.base import CRUDBase
 from models import Player
-from psycopg2 import IntegrityError
 from schemas.player import PlayerCreate, PlayerUpdate
 from sqlalchemy.orm import Session
 

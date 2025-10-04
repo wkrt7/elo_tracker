@@ -1,5 +1,3 @@
-from typing import List, Optional
-
 from crud.base import CRUDBase
 from models import Match, MatchParticipant
 from schemas.match import (
