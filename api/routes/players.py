@@ -24,10 +24,12 @@ def create_player(player_in: PlayerCreate, db: Session = Depends(get_db)):
 @router.get("/", response_model=PlayerRead)
 def read_player(id: int | None = None, name: str | None = None, db: Session = Depends(get_db)):
     if id:
-        return player_crud.get(db, id=id)
+        ret = player_crud.get(db, id=id)
     elif name:
-        return player_crud.get_player_by_name(db, name=name)
-    raise HTTPException(status_code=400, detail="Provide either id or name")
+        ret = player_crud.get_player_by_name(db, name=name)
+    if ret:
+        return ret
+    raise HTTPException(status_code=404, detail="Player not found")
 
 
 @router.get("/get_players/", response_model=List[PlayerRead])

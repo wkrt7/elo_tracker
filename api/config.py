@@ -6,6 +6,7 @@ from sqlalchemy.orm import declarative_base, sessionmaker
 
 load_dotenv()
 
+
 DB_PASSWORD = os.getenv("DB_PASSWORD")
 DB_ID = os.getenv("DB_ID")
 DB_URL = os.getenv("DB_URL")
