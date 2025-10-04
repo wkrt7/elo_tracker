@@ -14,7 +14,7 @@ DB_PORT = os.getenv("DB_PORT")
 
 SECRET_KEY = os.environ.get("SECRET_KEY")
 ALGORITHM = os.environ.get("ALGORITHM")
-ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES"))
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "30"))
 
 STARTING_ELO = int(os.getenv("STARTING_ELO", 1200))
 K_FACTOR_LONG = float(os.getenv("K_FACTOR", 50.0))
