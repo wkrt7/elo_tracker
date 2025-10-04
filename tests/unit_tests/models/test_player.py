@@ -46,10 +46,18 @@ def test_player_relationship_match_participation(db_session):
 
     # Create match participations
     participation1 = MatchParticipant(
-        match_id=match.id, player_id=player1.id, team_side=1, elo_before=1000, elo_after=1016
+        match_id=match.id,
+        player_id=player1.id,
+        team_side=1,
+        elo_before=1000,
+        elo_after=1016,
     )
     participation2 = MatchParticipant(
-        match_id=match.id, player_id=player2.id, team_side=2, elo_before=1050, elo_after=1034
+        match_id=match.id,
+        player_id=player2.id,
+        team_side=2,
+        elo_before=1050,
+        elo_after=1034,
     )
     db_session.add_all([participation1, participation2])
     db_session.commit()
@@ -77,7 +85,12 @@ def test_player_with_character(db_session):
     db_session.commit()
 
     participation = MatchParticipant(
-        match_id=match.id, player_id=player.id, character_id=character.id, team_side=1, elo_before=1200, elo_after=1216
+        match_id=match.id,
+        player_id=player.id,
+        character_id=character.id,
+        team_side=1,
+        elo_before=1200,
+        elo_after=1216,
     )
     db_session.add(participation)
     db_session.commit()

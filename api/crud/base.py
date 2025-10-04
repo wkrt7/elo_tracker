@@ -9,7 +9,9 @@ UpdateSchemaType = TypeVar("UpdateSchemaType")
 
 class CRUDProtocol(Protocol[ModelType, CreateSchemaType, UpdateSchemaType]):
     def get(self, db: "Session", id: int) -> Optional[ModelType]: ...
-    def list(self, db: "Session", skip: int = 0, limit: int = 100) -> List[ModelType]: ...
+    def list(
+        self, db: "Session", skip: int = 0, limit: int = 100
+    ) -> List[ModelType]: ...
     def create(self, db: "Session", obj_in: CreateSchemaType) -> ModelType: ...
     def update(self, db: "Session", id: int, obj_in) -> ModelType: ...
     def delete(self, db: "Session", id: int) -> Optional[ModelType]: ...
@@ -21,13 +23,17 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
     def __init__(self, model: type[ModelType]):
         self.model = model
 
-    def get(self, db: Session, id: int, with_transaction: bool = False) -> Optional[ModelType]:
+    def get(
+        self, db: Session, id: int, with_transaction: bool = False
+    ) -> Optional[ModelType]:
         ret = db.query(self.model).filter(self.model.id == id).first()
         if with_transaction and ret is None:
             raise ValueError(f"Object with id {id} does not exist")
         return ret
 
-    def batch_get(self, db: Session, ids: List[int], with_transaction: bool = False) -> List[ModelType]:
+    def batch_get(
+        self, db: Session, ids: List[int], with_transaction: bool = False
+    ) -> List[ModelType]:
         ret = db.query(self.model).filter(self.model.id.in_(ids)).all()
 
         if with_transaction:

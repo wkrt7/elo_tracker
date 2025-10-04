@@ -10,9 +10,7 @@ load_dotenv()  # loads .env into environment variables
 DB_PASSWORD = os.environ["DB_PASSWORD"]
 DB_ID = os.environ["DB_ID"]
 
-connection_string = (
-    f"postgresql://postgres.vkqxkuvqhzlsocnncoik:{DB_PASSWORD}@aws-1-us-east-2.pooler.supabase.com:6543/postgres"
-)
+connection_string = f"postgresql://postgres.vkqxkuvqhzlsocnncoik:{DB_PASSWORD}@aws-1-us-east-2.pooler.supabase.com:6543/postgres"
 engine = create_engine(connection_string)
 
 # Inspect the DB

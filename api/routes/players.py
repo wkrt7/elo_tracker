@@ -7,7 +7,9 @@ from fastapi import APIRouter, Depends, HTTPException
 from schemas.player import PlayerCreate, PlayerRead
 from sqlalchemy.orm import Session
 
-router = APIRouter(prefix="/players", tags=["players"], dependencies=[Depends(get_current_active_user)])
+router = APIRouter(
+    prefix="/players", tags=["players"], dependencies=[Depends(get_current_active_user)]
+)
 
 
 @router.post("/", response_model=PlayerRead)
@@ -22,7 +24,9 @@ def create_player(player_in: PlayerCreate, db: Session = Depends(get_db)):
 
 
 @router.get("/", response_model=PlayerRead)
-def read_player(id: int | None = None, name: str | None = None, db: Session = Depends(get_db)):
+def read_player(
+    id: int | None = None, name: str | None = None, db: Session = Depends(get_db)
+):
     if id:
         ret = player_crud.get(db, id=id)
     elif name:

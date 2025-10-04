@@ -10,7 +10,9 @@ class PlayerCRUD(CRUDBase[Player, PlayerCreate, PlayerUpdate]):
     def __init__(self):
         super().__init__(Player)
 
-    def batch_get_by_names(self, db: Session, names: List[str], with_transaction: bool = False) -> List[Player]:
+    def batch_get_by_names(
+        self, db: Session, names: List[str], with_transaction: bool = False
+    ) -> List[Player]:
         ret = db.query(Player).filter(Player.name.in_(names)).all()
         if with_transaction:
             if len(ret) != len(names):

@@ -13,4 +13,6 @@ class Character(Base):
     name: Mapped[str] = mapped_column(String(255), unique=True)
 
     # Relationships
-    match_participations: Mapped[List["MatchParticipant"]] = relationship(back_populates="character")
+    match_participations: Mapped[List["MatchParticipant"]] = relationship(
+        back_populates="character"
+    )
