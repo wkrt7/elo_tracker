@@ -8,9 +8,8 @@ from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jwt.exceptions import InvalidTokenError
 from pwdlib import PasswordHash
-
-from api.schemas.token import TokenData
-from api.schemas.user import User, UserInDB
+from schemas.token import TokenData
+from schemas.user import User, UserInDB
 
 fake_users_db = {
     "johndoe": {
