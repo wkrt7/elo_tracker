@@ -1,11 +1,11 @@
 from typing import List
 
 from auth.security import get_current_active_user
-from config import get_db
+from config import K_FACTOR_LONG, K_FACTOR_SHORT, get_db
 from crud.match import match_crud
 from fastapi import APIRouter, Depends, HTTPException
 from psycopg2 import IntegrityError
-from schemas.match import MatchCreate, MatchRead
+from schemas.match import MatchCreate, MatchInternal, MatchRead
 from services.elo_service import EloService
 from sqlalchemy.orm import Session
 
@@ -16,10 +16,11 @@ router = APIRouter(prefix="/matches", tags=["matches"], dependencies=[Depends(ge
 def add_match(match: MatchCreate, db: Session = Depends(get_db)):
     elo_service = EloService(db)
     try:
-
-        participants = elo_service.calculate_and_update(match)
-        match_data = match.model_copy(update={"participants": participants})
-        db_match = match_crud.create(db, match_data)
+        k_factor = K_FACTOR_LONG if match.is_long else K_FACTOR_SHORT
+        match_internal = MatchInternal(**match.model_dump(), k_factor=k_factor)
+        participants = elo_service.calculate_and_update(match_internal)
+        match_internal.participants = participants
+        db_match = match_crud.create(db, match_internal)
         db.commit()
         db.refresh(db_match)
         return db_match

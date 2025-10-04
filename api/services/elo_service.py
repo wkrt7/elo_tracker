@@ -1,7 +1,7 @@
 from typing import List
 
 from crud.player import player_crud
-from schemas.match import MatchCreate
+from schemas.match import MatchInternal
 from schemas.player import PlayerUpdate
 from sqlalchemy.orm import Session
 
@@ -10,7 +10,7 @@ class EloService:
     def __init__(self, db: Session) -> None:
         self.db = db
 
-    def calculate_and_update(self, match: MatchCreate) -> List[dict]:
+    def calculate_and_update(self, match: MatchInternal) -> List[dict]:
         """
         Calculate new ELO for match participants and update players in the DB.
         Returns a list of participant dicts with elo_before and elo_after.

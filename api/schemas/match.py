@@ -9,7 +9,6 @@ class MatchBase(BaseModel):
     finish_type_id: Optional[int] = None
     is_long: bool = True
     team_size: int
-    k_factor: float
     winner_team_side: Optional[int] = None  # 1, 2, or None
     participants: List["MatchParticipantCreate"]
 
@@ -33,7 +32,13 @@ class MatchCreate(MatchBase):
 class MatchRead(MatchBase):
     id: int
     date: datetime
+    k_factor: float
+
     model_config = ConfigDict(from_attributes=True)
+
+
+class MatchInternal(MatchCreate):
+    k_factor: float
 
 
 class MatchUpdate(BaseModel):
